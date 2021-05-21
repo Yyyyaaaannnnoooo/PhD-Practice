@@ -1,0 +1,31 @@
+{
+  "description": "Intercepting the Capturing of Data",
+  "manifest_version": 2,
+  "name": "intercepting hovering",
+  "version": "1.0",
+  "browser_action": {
+    "default_title": "making music since",
+    "default_popup": "popup.html"        
+  },
+  "externally_connectable": {
+    "matches": ["<all_urls>"]
+  },
+
+  "permissions": [
+    "webRequest",
+    "webRequestBlocking",
+    "*://*.youtube.com/*"
+  ],
+
+  "background": {
+    "scripts": ["background-chrome.js"]
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["*://*.youtube.com/*"],
+      "js": ["webmidi.min.js", "Tone.min.js","p5.min.js","Tracker.js","globals.js","sketch.js", "content-script.js"]
+    }
+  ],
+  "devtools_page": "devtools-page.html"
+}

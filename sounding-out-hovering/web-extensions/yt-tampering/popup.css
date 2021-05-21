@@ -1,0 +1,10 @@
+.btn{
+    cursor: pointer;
+    border: 1px black;
+    padding: 0.25rem;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+.btn:hover{
+    background-color: chartreuse;
+}
