@@ -92,6 +92,16 @@ class Tracker {
     myp5.update_tracker(this.tracker)
   }
 
+  clear_track(track){
+    for (let i = 0; i < this.track_length; i++) {
+      this.tracker[track][i] = this.new_note()
+    }
+
+
+    console.log(`clear track ${track}`)
+    myp5.update_tracker(this.tracker)
+  }
+
   new_note(_note, _vel, _CC_1, _CC_2, _CC_3) {
     return {
       note: _note || null,

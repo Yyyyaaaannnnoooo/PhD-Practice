@@ -6,8 +6,12 @@ let tracker = null
 
 ///~~~ HERE SET THE VALUE FOR THE CORRECT MIDI DRIVER ~~~///
 ///~~~ LOOK in the console and check which are the ports to connect to your midi device  ~~~///
-const midi_out_port = 2
-const midi_in_port = 2
+const midi_out_port = 0
+const midi_in_port = 0
+
+
+//INITIALIZE P5 SKETCH
+const myp5 = new p5(s)
 
 // const nodes = document.querySelectorAll("ytd-rich-grid-media")
 // console.log(nodes)
@@ -43,10 +47,8 @@ WebMidi.enable(err => {
     )
     // CHANGE THIS POSSIBLE BUG 🐛
     // midi_out = WebMidi.outputs[1]
-    tracker = new Tracker(4, WebMidi.outputs[midi_out_port], WebMidi.inputs[midi_in_port], Tone)
-    // tracker.init_tracker(185)
-    //INITIALIZE P5 SKETCH
-    // const myp5 = new p5(s)
+    tracker = new Tracker(5, WebMidi.outputs[midi_out_port], WebMidi.inputs[midi_in_port], Tone)
+    tracker.init_tracker(185)
   }
 
 })
@@ -156,6 +158,7 @@ function read_data(request) {
 
 function compute_percussions_pattern(events) {
   let max = 0
+  let i = 0
   for (const event of events) {
     const inner_event = return_inner_event(event)
     // const grid_data = inner_event.event['clientData']['gridData']
@@ -164,16 +167,33 @@ function compute_percussions_pattern(events) {
     // if(col > 5){
     //   console.log(inner_event)
     // }
+    const grid_data = inner_event.event['clientData']['gridData']
+    const col = parseInt(grid_data['veColumnCoordinate']) || 4
+    const row = parseInt(grid_data['veRowCoordinate']) || 64
+    computed_velocity = Math.abs((col * 32) - row) % 127
+    queue_notes(1, tracker.new_note('D4', computed_velocity), i * 300)
+    // tracker.add_note(4, tracker.new_note('G4', computed_velocity))
     if (inner_event.event['clientData']['gridData']['gridColumnCount'] !== undefined) {
+      // this should reset the track
+      tracker.clear_track(1)
       // console.log('//~~columnn count~~//')
       // console.log(inner_event.event['clientData']['gridData']['gridColumnCount'])
-      max = inner_event.event['clientData']['gridData']['gridColumnCount']
-      console.log('///~~~ MAKE percussions PATTERN ~~~///')
-      console.log(euclidean_pattern(max * 8, 128))
-      tracker.make_pattern(1, 'D4', euclidean_pattern(max * 8, 128))
-      break
+      // max = inner_event.event['clientData']['gridData']['gridColumnCount']
+      // console.log('///~~~ MAKE percussions PATTERN ~~~///')
+      // console.log(euclidean_pattern(max * 8, 128))
+      // tracker.make_pattern(1, 'D4', euclidean_pattern(max * 8, 128))
+      // break
     }
+
+    i++
   }
+}
+
+function queue_notes(track, note, delay) {
+  window.setTimeout(() => {
+    tracker.play_note(note.note, note.vel)
+    tracker.add_note(track, note)
+  }, delay)
 }
 
 function compute_main_voice_pattern(events) {
@@ -186,7 +206,9 @@ function compute_main_voice_pattern(events) {
   const t_h_d = 'thumbnailHoveredData'
   const forge_video_id = 'sI-UiIuUseY'
   let steps = events.length
-  const computed_velocity = []
+  let duration = 0
+  // let computed_velocity = 0
+  let i = 0
   for (const event of events) {
     const inner_event = return_inner_event(event)
     /////////////////////////////////////////////////////
@@ -195,20 +217,31 @@ function compute_main_voice_pattern(events) {
       console.log('///~~~PLAY A CLICK~~~///')
       tracker.add_note(2, tracker.new_note('E4', 127))
       tracker.play_note('E4', 127)
+      tracker.clear_track(0)
       steps--
     } else {
 
       // const video_id = inner_event.event[c_d][t_h_d]['videoId'
-      const duration = parseInt(inner_event.event[c_d][t_h_d]['durationHoveredMs'])
-      computed_velocity.push(Math.floor((duration / 3000) * 127))
+      duration += parseInt(inner_event.event[c_d][t_h_d]['durationHoveredMs'])
+
+      const computed_velocity = Math.floor((parseInt(inner_event.event[c_d][t_h_d]['durationHoveredMs']) / 3000) * 127)
+      queue_notes(0, tracker.new_note('C4', computed_velocity), i * 300)
     }
+    i++
     // tracker.add_note(0, tracker.new_note('C4', computed_velocity))
   }
-  if (steps > 0) {
-    console.log('///~~~ MAKE MAIN VOICE PATTERN ~~~///')
-    console.log(euclidean_pattern(steps * 4, 128))
-    tracker.make_pattern(0, 'C4', euclidean_pattern(steps * 4, 128), computed_velocity)
+  const duration_vel = []
+  const max_vel = (duration / 15000) * 127
+  const inc = (2 * Math.PI) / 127
+  for (let i = 0; i < 2 * Math.PI; i += inc) {
+    duration_vel.push(Math.floor(Math.abs(Math.sin(i) * max_vel)))
   }
+  tracker.make_pattern(3, 'F4', euclidean_pattern(128, 128), duration_vel)
+  // if (steps > 0) {
+  //   console.log('///~~~ MAKE MAIN VOICE PATTERN ~~~///')
+  //   console.log(euclidean_pattern(steps * 4, 128))
+  //   tracker.make_pattern(0, 'C4', euclidean_pattern(steps * 4, 128), computed_velocity)
+  // }
 }
 
 
