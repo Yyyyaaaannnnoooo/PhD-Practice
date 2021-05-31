@@ -16,7 +16,7 @@ function handleError(error) {
 Handle the result of evaluating the script.
 If there was an error, call handleError.
 */
-function handleResult(result) { 
+function handleResult(result) {
   if (result[1]) {
     handleError(result[1]);
   }
@@ -27,12 +27,12 @@ Handle the result of evaluating the jQuery test script.
 Log the result of the test, or
 if there was an error, call handleError.
 */
-function handlejQueryResult(result) { 
+function handlejQueryResult(result) {
   if (result[0] !== undefined) {
     console.log(`jQuery: ${result[0]}`);
   } else if (result[1]) {
     handleError(result[1]);
-  }      
+  }
 }
 /**
 When the user clicks the 'jquery' button,
@@ -1277,10 +1277,26 @@ for (const t of nodes) {
   }
 }
 `
-document.getElementById("button_h1").addEventListener("click", () => {
-    chrome.devtools.inspectedWindow.eval(inspectString)
-    .then(handleResult);  
-}); 
+
+
+document.getElementById("submit").addEventListener("click", () => {
+  const code = document.querySelector('.editable').innerText
+  console.log(code)
+  chrome.devtools.inspectedWindow.eval(code)
+    .then(handleResult);
+});
+
+
+
+
+// function send_message(_id, _data) {
+//   const ID = 'lkccpljndkjcmbkbikhkfionihkllpmb'
+//   chrome.runtime.sendMessage(ID, { id: _id, data: _data }, response => {
+//     console.log(response.res);
+//   })
+// }
+
+// send_message(456, { gatto: 'cat' })
 
 /**
 When the user clicks the 'message' button,

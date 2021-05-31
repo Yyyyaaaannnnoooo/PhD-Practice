@@ -7,6 +7,7 @@ const s = function (sketch) {
   sketch.trck = null
   sketch._pointer = 0
   sketch._initialized = false
+  sketch._track_length = 0
 
   sketch.setup = function () {
     document.body.style['userSelect'] = 'none'
@@ -27,7 +28,8 @@ const s = function (sketch) {
   sketch.initialize = (tracker) => {
     console.log('///~~~ SKETCH INITIALIZED ~~~///');
     sketch.trck = tracker
-    console.log(sketch.trck)
+    sketch._track_length = sketch.trck[0].length
+    console.log(sketch._track_length);
     sketch._initialized = true
   }
 
@@ -50,7 +52,7 @@ const s = function (sketch) {
           const track = sketch.trck[i]
           // console.log('///~~~ p5debug ~~~///')
           // console.log(track, sketch._pointer)
-          const current_pointer = ((sketch._pointer - step_backward) + 127) % 127
+          const current_pointer = ((sketch._pointer - step_backward) + sketch._track_length) % sketch._track_length
           const note = track[current_pointer]['note']
           const velocity = track[current_pointer]['vel']
 
@@ -64,10 +66,13 @@ const s = function (sketch) {
           }
           sketch.rect(col_w * i, ((shown_steps * cell_h) - (step_backward * cell_h)) - cell_h / 2, col_w, cell_h)
           sketch.fill(255)
-          sketch.text(`: ${note === null ? 0 : note} ::: ${velocity} :`, col_w / 2 + (col_w * i), (shown_steps * cell_h) - (step_backward * cell_h))
+          sketch.text(`: ${current_pointer} ::: ${note === null ? 0 : note} ::: ${velocity} :`, col_w / 2 + (col_w * i), (shown_steps * cell_h) - (step_backward * cell_h))
         }
       }
     }
+
+
+
   }
 
   sketch.windowResized = () => {

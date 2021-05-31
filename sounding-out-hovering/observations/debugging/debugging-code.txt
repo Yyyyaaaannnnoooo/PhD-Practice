@@ -1,0 +1,11 @@
+tara moknee 40sec apart for each watch stops after 75% of video watched
+
+Wired video AI 40 sec apart at the beginning in exponential manner from 5 to 40 sec never stops
+
+
+
+to search: 
+- sendVideoStatsEngageEvent
+- raw_watch_next_response
+- watchNextResponse
+- suggestions

@@ -3,7 +3,8 @@ const yt_events_names = {
     VES: 'visualElementShown',
     VESC: 'visualElementStateChanged',
     VEA: 'visualElementAttached',
-    VEG: 'visualElementGestured'
+    VEG: 'visualElementGestured',
+    player_stats: 'html5PlayerHealthEvent'
   }
   
   function random_127_value(low, high) {
@@ -29,4 +30,14 @@ const yt_events_names = {
       event_name: inner_event[0],
       event: event[inner_event[0]]
     }
+  }
+
+  const yt_ids = {
+    next: 'next',
+    player: 'player',
+    log: 'log',
+    watchtime:'wt',
+    qoe: 'qoe',
+    search: 'search',
+    playlist: 'edit_playlist'
   }

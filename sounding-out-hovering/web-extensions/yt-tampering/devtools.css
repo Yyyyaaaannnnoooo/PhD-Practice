@@ -1,0 +1,14 @@
+body{
+    background-color: black;
+    color: #3f3;
+}
+.editable{
+    font-family: Courier, monospace;
+    max-width: 400px;
+    height: 400px;
+}
+.btn{
+    cursor: pointer;
+    border: 3px white;
+    padding: 0.25rem;
+}

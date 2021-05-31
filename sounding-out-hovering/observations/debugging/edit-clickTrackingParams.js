@@ -1,0 +1,1 @@
+document.querySelectorAll("ytd-thumbnail.style-scope.ytd-compact-video-renderer")
