@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="devtools.css">
+</head>
+<script src="devtools-panel.js"></script>
+<body>
+  <div class="editable">
+  </div>
+  <div class="title">
+    What to do next?
+  </div>
+  <div class="container">
+    <h2>EVAL converter</h2>
+    ~~~~~~~~~~~~~~~~~~~~~~~ <br>
+    { <br>
+    <input type="text" id="convert" value="ms: Math.round(Xh() - this.startTimeMs), id: this.videoId"> <br>
+    } <br>
+    ~~~~~~~~~~~~~~~~~~~~~~~ <br>
+
+    <div class="converted clipboard">eval("fetch('http://127.0.0.1:3000/log-point', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '"+JSON.stringify({<span id="conversion">ms: Math.round(Xh() - this.startTimeMs), id: this.videoId</span>})+"'}).then(response => response.json()).then(result => { console.log('Success:', result); }).catch(error => { console.error('Error:', error); });")</div>
+    <!-- now that the midi device has been chosen navigate to <br>
+    the network panel. In there you can set some log
+    points<br>
+    that can trigger a midi note. <br>
+    Resources about log points can be found at<br>
+    <span class="clipboard">"https://developer.mozilla.org/en-US/docs/Tools/Debugger/Set_a_logpoint" </span><br>
+    for example go to the sources tab and search for this js file
+    <br>
+    "/s/desktop/79946f8f/jsbin/desktop_polymer.vflset/desktop_polymer.js"
+    <br>
+    once there hit <span class="clipboard">cmd + f</span> and search for "b.durationHoveredMs"<br>
+    set there a log point and copy the
+    following as message<br>
+    <span class="clipboard">__send_message("log_point", {"hover": b.durationHoveredMs}, 0,
+      false),`hovering for ${b.durationHoveredMs}`</span><br>
+    this will do two things, first will send a midi note C4
+    message on channel 1, and will log the hovering information to the console.<br>
+    the hovering information sent over is
+    the data that youtube collects and sends as log_messages back to its server. so to trigger such note you will need
+    to hover a video thumbnail<br>
+    <br>
+    __send_message(id, data, trig,record)<br>
+    <span class="highlight">id</span> = an
+    identifier so that content script can filter it against other messages. for now it functions only with "log_point",
+    additional might be added in the future<br>
+    <span class="highlight">data</span> = an object containing values to be
+    translated into midi values. this needs to be better implemented in the future, because it works only with hovering
+    information for the moment<br>
+    <span class="highlight">trig</span> = integer between 0 and 7 to paly or record a note
+    between C3 => C4. trigs here are to be intended to trigger a percussion<br>
+    <span class="highlight">record</span> =
+    boolean set to true will record the trig into the built in step sequencer<br> -->
+
+  </div>
+  <div class="debug">
+
+  </div>
+  <!-- <div class="btn" id="submit">INJECT</div> -->
+  
+</body>
+
+</html>

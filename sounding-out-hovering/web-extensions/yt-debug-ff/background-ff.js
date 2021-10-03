@@ -1,5 +1,3 @@
-
-
 console.log(`
 %c      ///~~~~~~~  IMPORTANT  ~~~~~~~///*
       |* check that the extension  ID    *
@@ -12,6 +10,20 @@ function logURL(requestDetails) {
   console.log("Loading: ")
   console.log(requestDetails)
 }
+
+
+browser.webRequest.onBeforeRequest.addListener(
+  tamper_request_listener,
+  { urls: ["<all_urls>"] },
+  ["blocking", "requestBody"]
+);
+
+browser.webRequest.onBeforeSendHeaders.addListener(
+  tamper_header_listener,
+  { urls: ["<all_urls>"] },
+  // ["requestHeaders", "blocking", "extraHeaders"]
+  ["requestHeaders", "blocking"]
+);
 
 
 function tamper_request_listener(e) {
@@ -49,83 +61,6 @@ function tamper_request_listener(e) {
       }
     }
   }
-  // console.log("raw request")
-
-  // console.log('//////////////////////////////////////////////\n//////////////////////////////////////////////');
-  // let json = JSON.stringify(e.requestBody.raw[0].bytes)
-  /**
-   * solution to translate RAW bytes into readable JSON
-   * Source of the solution found here:
-   * https://developers.google.com/web/updates/2012/06/How-to-convert-ArrayBuffer-to-and-from-String
-   */
-  // console.log(e.requestBody.raw[0].bytes)
-  // if (!!e.requestBody.formData) {
-  //   console.log('///~~~ ad ~~~///');
-  //   console.log(e)
-  // } else {
-  //   const raw_body = String.fromCharCode.apply(null, new Uint8Array(e.requestBody.raw[0].bytes))
-  //   // console.log('raw body');
-  //   // console.log(raw_body);
-  //   // console.log('//////////////////////////////////////////////\n//////////////////////////////////////////////');
-  //   const json = JSON.parse(raw_body)
-  //   // console.log("it's data Baby!");
-  //   // console.log(json)
-
-
-
-  //   // if (json['events']) {
-  //   const v_e_g = 'visualElementGestured'
-  //   const c_d = 'clientData'
-  //   const g_t = 'gestureType'
-  //   const interaction = 'INTERACTION_LOGGING_GESTURE_TYPE_HOVER'
-  //   const t_h_d = 'thumbnailHoveredData'
-  //   const forge_video_id = 'sI-UiIuUseY'
-  //   // const gestured = json['events'].map(item => item.hasOwnPropery(v_e_g))
-  //   // console.log(gestured)
-
-  //   // for (const event of json['events']) {
-
-  //   //   Object.keys(event).forEach(key => {
-  //   //     if (key === v_e_g) {
-  //   //       const item = event[key]
-  //   //       if (item[g_t] === interaction) {
-  //   //         // console.log('tampered')
-  //   //         let data = item[c_d]
-  //   //         data = data[t_h_d]
-  //   //         console.log("posting a message!");
-  //   //         console.log(item)
-  //   //         chrome.tabs.query({ url: '*://*.youtube.com/*' }, tabs => {
-  //   //           // here we can connect to more browser tabs using a loop
-  //   //           chrome.tabs.sendMessage(tabs[0].id, { item, midi_channel: 1, hover: true }, response => {
-  //   //             console.log(response.res);
-  //   //           });
-  //   //         });
-
-  //   //         console.log('//////////////////////////////////////////////\n//////////////////////////////////////////////');
-  //   //         // console.log(data)
-  //   //         // console.log(data['videoId'])
-  //   //         // data['videoId'] = forge_video_id
-  //   //         // console.log(data['videoId'])
-  //   //         // this works
-  //   //       }
-  //   //     }
-  //   //   }
-  //   //   )
-  //   // }
-  //   // }
-  //   /**
-  //    * need to check whther the tamperng below really works
-  //    */
-  //   // console.log(json)
-  //   // const converted_body = JSON.stringify(json)
-  //   // const buf = new ArrayBuffer(converted_body.length * 2); // 2 bytes for each char
-  //   // var bufView = new Uint8Array(buf);
-  //   // for (var i = 0, strLen = converted_body.length; i < strLen; i++) {
-  //   //   bufView[i] = converted_body.charCodeAt(i);
-  //   // }
-  //   // requestBody.raw[0].bytes = buf // tamper request body? will it work like this?
-  //   // console.log('//////////////////////////////////////////////\n//////////////////////////////////////////////');
-  // }
 
 }
 
@@ -209,9 +144,9 @@ function getParamsFromUrl(url) {
  */
 
 function send_message(_id, _data) {
-  chrome.tabs.query({ url: '*://*.youtube.com/*' }, tabs => {
+  browser.tabs.query({ url: '*://*.youtube.com/*' }, tabs => {
     // here we can connect to more browser tabs using a loop
-    chrome.tabs.sendMessage(tabs[0].id, { id: _id, data: _data }, response => {
+    browser.tabs.sendMessage(tabs[0].id, { id: _id, data: _data }, response => {
       console.log(response.res);
     });
   });
@@ -220,44 +155,44 @@ function send_message(_id, _data) {
  * This handles the message passing from the log point
  * it should forward it to the content script
  */
-chrome.runtime.onMessageExternal.addListener(
-  (request, sender, send_response) => {
-    console.log(request)
-    send_message(request['id'], request['data'])
-    send_response({ res: "item received" }
-    );
-  })
+// browser.runtime.onMessageExternal.addListener(
+//   (request, sender, send_response) => {
+//     console.log(request)
+//     send_message(request['id'], request['data'])
+//     send_response({ res: "item received" }
+//     );
+//   })
 
-chrome.runtime.onMessage.addListener(
-  (request, sender, send_response) => {
-    if (request['msg'] !== undefined) {
-      console.log(request)
+// browser.runtime.onMessage.addListener(
+//   (request, sender, send_response) => {
+//     if (request['msg'] !== undefined) {
+//       console.log(request)
 
-      chrome.webRequest.onBeforeRequest.addListener(
-        tamper_request_listener,
-        { urls: ["<all_urls>"] },
-        ["blocking", "requestBody"]
-      );
+//       browser.webRequest.onBeforeRequest.addListener(
+//         tamper_request_listener,
+//         { urls: ["<all_urls>"] },
+//         ["blocking", "requestBody"]
+//       );
 
-      chrome.webRequest.onBeforeSendHeaders.addListener(
-        tamper_header_listener,
-        { urls: ["<all_urls>"] },
-        // ["requestHeaders", "blocking", "extraHeaders"]
-        ["requestHeaders", "blocking"]
-      );
-      // send_message(request, null)
-      send_response({ res: "item received" }
-      )
-    }
-  })
+//       browser.webRequest.onBeforeSendHeaders.addListener(
+//         tamper_header_listener,
+//         { urls: ["<all_urls>"] },
+//         // ["requestHeaders", "blocking", "extraHeaders"]
+//         ["requestHeaders", "blocking"]
+//       );
+//       // send_message(request, null)
+//       send_response({ res: "item received" }
+//       )
+//     }
+//   })
 
-// chrome.webRequest.onBeforeRequest.addListener(
+// browser.webRequest.onBeforeRequest.addListener(
 //   tamper_request_listener,
 //   { urls: ["<all_urls>"] },
 //   ["blocking", "requestBody"]
 // );
 
-// chrome.webRequest.onBeforeSendHeaders.addListener(
+// browser.webRequest.onBeforeSendHeaders.addListener(
 //   tamper_header_listener,
 //   { urls: ["<all_urls>"] },
 //   // ["requestHeaders", "blocking", "extraHeaders"]

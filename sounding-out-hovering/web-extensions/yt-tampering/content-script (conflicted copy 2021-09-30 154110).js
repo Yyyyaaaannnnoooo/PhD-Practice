@@ -1,6 +1,8 @@
-
-// const ID = 'lkccpljndkjcmbkbikhkfionihkllpmb' // mac 2016
-const ID = 'likacmeclfhieiomplbbhpfigcalhfei'
+// Mac 2016
+const ID = 'lkccpljndkjcmbkbikhkfionihkllpmb'
+//-------------------//
+// Mac 2012
+// const ID = 'likacmeclfhieiomplbbhpfigcalhfei'
 
 let tracker = null
 
@@ -18,8 +20,8 @@ const trigs = [
 
 ///~~~ HERE SET THE VALUE FOR THE CORRECT MIDI DRIVER ~~~///
 ///~~~ LOOK in the console and check which are the ports to connect to your midi device  ~~~///
-let midi_out_port = 2
-let midi_in_port = 2
+let midi_out_port = 1
+let midi_in_port = 1
 let myp5 = null
 
 // console.log('///~~~ INITIALIZE P5 SKETCH ~~~///')
@@ -66,7 +68,12 @@ chrome.runtime.onMessage.addListener(
     // console.log(request)
     if (request['id'] === 'devtools') {
       console.log(request['id'])
-      chrome.runtime.sendMessage(ID, { id: 'midi', in: WebMidi.inputs, out: WebMidi.outputs }, response => console.log(response.res))
+      // const ID = 'lkccpljndkjcmbkbikhkfionihkllpmb' // mac 2016
+      // const ID = 'likacmeclfhieiomplbbhpfigcalhfei'
+      chrome.runtime.sendMessage(ID,
+        { id: 'midi', in: WebMidi.inputs, out: WebMidi.outputs },
+        response => console.log(response.res)
+      )
     } else if (request['id'] === 'midi_out') {
       console.log(request)
 
@@ -123,7 +130,7 @@ function read_data(request) {
       /**
        * here you ned to add a function that handles various fired logpoints
        * 1. hovering
-       * 2. watchtime
+       * 2. watchtime line 47180 && 47212 EEa(a, b)
        * 3. user-intent base.js line 83158
        *  - it seems to calculate the time between the start of advertising and you pressing skip ad
        * 4. freshness?
@@ -164,24 +171,27 @@ function read_data(request) {
        * youtube records every sigle hovering of video thumbnail and sends this information 
        * as log
        */
-      // const events = request['data']['events']
-      // tracker.play_note(trigs[0].note, 127, trigs[0].midi_ch)
-      // /**
-      //  *  this below should compute velocities fto modulate stuff...
-      //  */
-      // // const VESC_events = events.filter(item => return_inner_event(item).event_name === yt_events_names.VESC)
-      // // // console.log(`///~~~${yt_events_names.VESC}~~~///`)
-      // // // console.log(VESC_events)
-      // // compute_percussions_pattern(VESC_events)
-      // /////////////////////////////////////////////
-      // const gesture_events = events.filter(item => return_inner_event(item).event_name === yt_events_names.VEG)
-      // // console.log(`///~~~${yt_events_names.VEG}~~~///`)
-      // // console.log(gesture_events)
-      // if (gesture_events.length > 0) {
-      //   compute_main_voice_pattern(gesture_events)
-      // }
+      const events = request['data']['events']
+      tracker.play_note(trigs[0].note, 127, trigs[0].midi_ch)
+      /**
+       *  this below should compute velocities fto modulate stuff...
+       */
+      // const VESC_events = events.filter(item => return_inner_event(item).event_name === yt_events_names.VESC)
+      // // console.log(`///~~~${yt_events_names.VESC}~~~///`)
+      // // console.log(VESC_events)
+      // compute_percussions_pattern(VESC_events)
+      /////////////////////////////////////////////
+      const gesture_events = events.filter(item => return_inner_event(item).event_name === yt_events_names.VEG)
+      // console.log(`///~~~${yt_events_names.VEG}~~~///`)
+      // console.log(gesture_events)
+      if (gesture_events.length > 0) {
+        compute_main_voice_pattern(gesture_events)
+      }
       break
     case yt_ids.watchtime:
+      /**
+       * USE THIS TO TRIGGER a BURST ENVELOPE IN VOICE 1
+       */
 
       /**
        * this is the watchtime header.
@@ -196,6 +206,7 @@ function read_data(request) {
        * nevertheless I did not analyze the last watchtime header sent after the video is closed. <= TO DO!
        */
 
+      tracker.play_note(trigs[3].note, 127, trigs[3].midi_ch)
       // tracker.play_note(trigs[1].note, 127, trigs[1].midi_ch)
       let vol = data['volume'].split('%2C')
       vol = vol[vol.length - 1]
@@ -213,16 +224,18 @@ function read_data(request) {
       //   queue_notes(trigs[3].track, tracker.new_note(trigs[3].note, computed_velocity_wt, trigs[3].midi_ch), i * 150, true)
       // }
 
-      const state = data['state']
-      console.log('///~~~ state ~~~/// \n', state)
-      if (state === 'paused') {
-        tracker.pause()
-      } else (
-        tracker.resume()
-      )
+      // const state = data['state']
+      // console.log('///~~~ state ~~~/// \n', state)
+      // if (state === 'paused') {
+      //   tracker.pause()
+      // } else (
+      //   tracker.resume()
+      // )
       break
     case yt_ids.qoe:
-
+      /**
+       * USE THIS to TRIGGER BURST ENVELOPE ON VOICE 2
+       */
       /**
        * Here you should take advantage of the user_intent field.
        * the user intent appears in the qoe? header when it is fired the second time.
@@ -232,12 +245,12 @@ function read_data(request) {
        * Nevertheless it should be used as a value to determine the velocity of this note below
        */
 
-      tracker.add_note(trigs[2].track, tracker.new_note(trigs[2].note, 127, trigs[2].midi_ch))
+      // tracker.add_note(trigs[2].track, tracker.new_note(trigs[2].note, 127, trigs[2].midi_ch))
       tracker.play_note(trigs[2].note, 127, trigs[2].midi_ch)
-      setTimeout(() => {
-        tracker.add_note(trigs[2].track, tracker.new_note(trigs[2].note, 1, trigs[2].midi_ch))
-        tracker.play_note(trigs[2].note, 1, trigs[2].midi_ch)
-      }, 500)
+      // setTimeout(() => {
+      //   tracker.add_note(trigs[2].track, tracker.new_note(trigs[2].note, 1, trigs[2].midi_ch))
+      //   tracker.play_note(trigs[2].note, 1, trigs[2].midi_ch)
+      // }, 500)
       break
     case yt_ids.search:
 

@@ -44,8 +44,10 @@ class Tracker {
       for (let j = 0; j < this.track_length; j++) {
         track[j] = this.new_note()
         if (i === this.tracks - 1) {
-          // here we set the clock
-          track[j] = this.new_note('A4', 127)
+          // here we set the clock// here we set the clock
+          if (j % 2 === 0) {
+            track[j] = this.new_note('A4', 127)
+          }
         }
       }
       this.tracker.push(track)
@@ -82,7 +84,9 @@ class Tracker {
         track[j] = this.new_note()
         if (i === this.tracks - 1) {
           // here we set the clock
-          track[j] = this.new_note('A4', 127)
+          if (j % 2 === 0) {
+            track[j] = this.new_note('A4', 127)
+          }
         }
       }
       this.tracker.push(track)

@@ -1,5 +1,5 @@
-// const ID = 'lkccpljndkjcmbkbikhkfionihkllpmb' // Mac 2016
-const ID = 'likacmeclfhieiomplbbhpfigcalhfei'
+const ID = 'lkccpljndkjcmbkbikhkfionihkllpmb' // Mac 2016
+// const ID = 'likacmeclfhieiomplbbhpfigcalhfei'
 
 /**
 Handle errors from the injected script.
@@ -86,12 +86,10 @@ const code_to_inject = `/**
  * @param {Boolean} _record 
  * @param {Number} _trig
  */
-console.log("code injected")
 function __send_message(_id, _data, _trig, _record) {
-  console.log("message prepared to be sent")
   // this below is the extension ID
-
-  const ID = 'likacmeclfhieiomplbbhpfigcalhfei'
+  // const ID = 'likacmeclfhieiomplbbhpfigcalhfei'
+  const ID = ${ID}
   const data = {
     val: _data,
     trig: _trig,
@@ -100,9 +98,9 @@ function __send_message(_id, _data, _trig, _record) {
   chrome.runtime.sendMessage(ID, { id: _id, data}, response => {
     console.log(response.res);
   })
-}
-`
-
+}`
+// const ID = 'lkccpljndkjcmbkbikhkfionihkllpmb' // Mac 2016
+// const ID = 'likacmeclfhieiomplbbhpfigcalhfei'
 window.onload = () => {
   chrome.devtools.inspectedWindow.eval(code_to_inject,
     (result, is_exception) => {
@@ -131,7 +129,7 @@ chrome.runtime.onMessage.addListener(
         const out = request['out'][i]
         const div = document.createElement('div')
         div.setAttribute('class', 'btn')
-        div.setAttribute('id', i)
+        div.setAttribute('id', out.name)
         div.textContent = out.name
         div.addEventListener('click', (e) => {
           const midi_out = parseInt(e.target.id)
