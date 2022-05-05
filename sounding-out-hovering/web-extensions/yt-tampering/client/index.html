@@ -19,12 +19,14 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ name: 'yt', m: 'h' })
             })
-            .then(response => response.json()).then(result => { console.log('Success:', result); }).catch(error => { console.error('Error:', error); });
+            .then(response => response.json())
+            .then(result => { console.log('Success:', result); })
+            .catch(error => { console.error('Error:', error); });
 
-        eval("fetch('http://127.0.0.1:3000/log-point', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: "+JSON.stringify({ms: Math.round(Xh() - this.startTimeMs), id: this.videoId})+"}).then(response => response.json()).then(result => { console.log('Success:', result); }).catch(error => { console.error('Error:', error); });")
+        eval("fetch('http://127.0.0.1:3000/log-point', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: " + JSON.stringify({ ms: Math.round(Xh() - this.startTimeMs), id: this.videoId }) + "}).then(response => response.json()).then(result => { console.log('Success:', result); }).catch(error => { console.error('Error:', error); });")
 
 
-        eval("fetch('http://127.0.0.1:3000/log-point', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '"+JSON.stringify({ms: Math.round(Xh() - this.startTimeMs), id: this.videoId})+"'}).then(response => response.json()).then(result => { console.log('Success:', result); }).catch(error => { console.error('Error:', error); });")
+        eval("fetch('http://127.0.0.1:3000/log-point', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '" + JSON.stringify({ ms: Math.round(Xh() - this.startTimeMs), id: this.videoId }) + "'}).then(response => response.json()).then(result => { console.log('Success:', result); }).catch(error => { console.error('Error:', error); });")
     </script>
 </body>
 

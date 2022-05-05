@@ -1,33 +1,52 @@
-body{
+body {
     background-color: black;
     color: #3f3;
     font-family: Courier, monospace;
 }
+
+pre {
+    white-space: pre-wrap;
+    /* css-3 */
+    white-space: -moz-pre-wrap;
+    /* Mozilla, since 1999 */
+    white-space: -pre-wrap;
+    /* Opera 4-6 */
+    white-space: -o-pre-wrap;
+    /* Opera 7 */
+    word-wrap: break-word;
+    /* Internet Explorer 5.5+ */
+}
+
 /* .editable{
 } */
-.container{
+
+.container {
     max-width: 400px;
     height: auto;
     /* box-shadow: white 3px 3px; */
     margin: auto;
     line-height: 1.5rem;
 }
-.title{
+
+.title {
     max-width: 400px;
     font-size: 1.25rem;
     letter-spacing: 4px;
     margin: auto;
 }
-.highlight{
+
+.highlight {
     color: #33f;
     text-decoration: #33f underline wavy;
     background-color: pink;
 }
-.clipboard{
+
+.clipboard {
     background-color: #222;
     color: orange;
 }
-.btn{
+
+.btn {
     cursor: pointer;
     /* border: solid 3px white; */
     padding: 0.25rem;

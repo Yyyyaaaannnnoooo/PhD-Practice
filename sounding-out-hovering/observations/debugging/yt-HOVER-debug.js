@@ -62,7 +62,7 @@ var M = function () {
   return PolymerFakeBaseClass.apply(this, arguments) || this
 }
 /************************************************************************************************
-* as you can see her below e becomes the prototype of the function , or rather class RQ
+* as you can see here below it becomes the prototype of the function , or rather class RQ
 * here they are using this old way to compile classes using the the prototypes within a function
 * I guess this is made for retro-compatibility with older flavors of JavaScript
 ************************************************************************************************/

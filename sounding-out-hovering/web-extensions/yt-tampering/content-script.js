@@ -479,12 +479,12 @@ function euclidean_pattern(triggers, pattern_length) {
       .concat(groups.slice(count, -count));
   }
   return [].concat.apply([], groups);
-};
+}
 
 function compare_arrays(a, b) {
   // TODO: optimize
   return JSON.stringify(a) === JSON.stringify(b);
-};
+}
 
 
 

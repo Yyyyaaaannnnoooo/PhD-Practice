@@ -139,8 +139,8 @@ function JRa(a) {
     f.then(function () {
       var h = Ak() - b,
       // hard coded values within youtube hovering capture
-      l = qj('minimum_duration_to_consider_mouseover_as_hover', 500),
-      m = qj('max_duration_to_consider_mouseover_as_hover', 600000);
+      l = qj('minimum_duration_to_consider_mouseover_as_hover', 500), // half second
+      m = qj('max_duration_to_consider_mouseover_as_hover', 600000); // 10 minutes
       h = Math.round(h);
       l > h || m <= h || (l = a.getScreenLayer ? a.getScreenLayer() : void 0, l = so(l) || '', m = aI($H.getInstance(), a), BRa(l, a.visualElement ? a.visualElement : mo(m), 'INTERACTION_LOGGING_GESTURE_TYPE_HOVER', {
         hoverData: {

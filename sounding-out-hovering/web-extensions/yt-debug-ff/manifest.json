@@ -14,7 +14,8 @@
   "permissions": [
     "webRequest",
     "webRequestBlocking",
-    "*://*.youtube.com/*"
+    "*://*.youtube.com/*", 
+    "*://i.ytimg.com/*"
   ],
 
   "background": {
@@ -23,7 +24,7 @@
 
   "content_scripts": [
     {
-      "matches": ["*://*.youtube.com/*"],
+      "matches": ["*://*.youtube.com/*", "*://i.ytimg.com/*"],
       "js": ["globals.js","content-script.js"]
     }
   ],
