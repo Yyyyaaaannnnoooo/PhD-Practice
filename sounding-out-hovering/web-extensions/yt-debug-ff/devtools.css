@@ -48,6 +48,6 @@ pre {
 
 .btn {
     cursor: pointer;
-    /* border: solid 3px white; */
+    border: solid 3px white;
     padding: 0.25rem;
 }

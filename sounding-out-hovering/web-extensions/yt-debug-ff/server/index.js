@@ -57,6 +57,9 @@ const CC_CH_1 = 176
 const output_modular = new midi.Output();
 const output_live = new midi.Output();
 
+let port_modular = 0
+
+let got_midi_outputs = false
 // Count the available output_modular ports.
 const ports = output_modular.getPortCount();
 
@@ -65,14 +68,22 @@ for (let i = 0; i < ports; i++) {
   console.log(output_modular.getPortName(i), '\non port number: ', i);
 }
 
-const port_modular = 0
 const port_live = 0
 console.log('sending MIDI to hardware: ' + output_modular.getPortName(port_modular))
-console.log('sending MIDI to software: ' + output_modular.getPortName(port_live))
+// console.log('sending MIDI to software: ' + output_modular.getPortName(port_live))
 
-// Open the first available output_modular port.
-output_modular.openPort(port_modular)
-output_live.openPort(port_live)
+/**
+ * Set midi output to the selected from the log-panel
+ * @param {Object} port 
+ */
+const set_midi_output = (port) => {
+  // Open the first available output_modular port.
+  port_modular = port['value']
+  output_modular.openPort(port_modular)
+  got_midi_outputs = true
+}
+
+// output_live.openPort(port_live)
 
 // Send a MIDI message.
 // Array of 3 values note on/off note as midi representation, velocity 0 => 127
@@ -81,12 +92,12 @@ output_live.openPort(port_live)
 // MIDI notes 60 = C3 
 // this will be our clock 163bpm = 1000 * 60 / 163 = 368 Ms
 
-setInterval(() => {
-  output_modular.sendMessage([144, 72, 127])
-  setTimeout(() => {
-    output_modular.sendMessage([128, 72, 127])
-  }, 75)
-}, 368)
+// setInterval(() => {
+//   output_modular.sendMessage([144, 72, 127])
+//   setTimeout(() => {
+//     output_modular.sendMessage([128, 72, 127])
+//   }, 75)
+// }, 368)
 
 /**
  * the following is our main sequencer
@@ -109,30 +120,37 @@ setInterval(() => {
     // play_note('g3', 'ch_2', arp_notes[arp_index], 10) // old version
     play_note(arp_notes[arp_index], 'ch_2', 127, 10)
   }
-  if (!!qoe_arp_notes[arp_index]) {
+  if (!!qoe_arp_notes[qoe_arp_index]) {
     // play_note('a3', 'ch_6', qoe_arp_notes[arp_index], 10) // old version
-    play_note(qoe_arp_notes[arp_index], 'ch_6', 127, 10)
+
+    play_note(qoe_arp_notes[qoe_arp_index], 'ch_6', 127, 10)
   }
   // /~~~ COMMENT FROM HERE ~~~///
-  if (perc_pattern[arp_index] !== undefined) {
-    if (perc_pattern[arp_index] === 1) {
-      play_note('f3', 'ch_4', 1)
-    } else {
-      const prob = Math.random()
-      if (prob < 0.5) {
-        const random_vel = 80 + Math.floor(Math.random() * 47)
-        play_note('f3', 'ch_4', random_vel)
-      }
+  if (perc_pattern[perc_index] !== undefined) {
+    if (perc_pattern[perc_index] === 1) {
+
+      const random_vel = 80 + Math.floor(Math.random() * 47)
+      play_note('f3', 'ch_4', random_vel)
     }
+    // else {
+    //   const prob = Math.random()
+    //   if (prob < 0.5) {
+    //     play_note('f3', 'ch_4', random_vel)
+    //   }
+    // }
   }
   // /~~~ TO HERE ~~~///
   arp_index++
   qoe_arp_index++
+  perc_index++
   if (arp_index > max_arp_notes - 1 || arp_index >= arp_notes.length) {
     arp_index = 0
   }
   if (qoe_arp_index > max_arp_notes - 1) {
     qoe_arp_index = 0
+  }
+  if (perc_index > max_arp_notes - 1) {
+    perc_index = 0
   }
 }, 184)
 
@@ -157,13 +175,15 @@ function add_notes_to_arp(arr) {
  * @param {Number} velocity 0 => 127
  */
 function play_note(note, ch, velocity, sustain) {
-  const s = !!sustain ? sustain : 75
-  // output_modular.sendMessage([NOTE_ON[ch], notes[note], velocity]) // old version
-  output_modular.sendMessage([NOTE_ON[ch], note, velocity])
-  setTimeout(() => {
-    output_modular.sendMessage([NOTE_OFF[ch], notes[note], velocity]) // old version
-    output_modular.sendMessage([NOTE_OFF[ch], note, velocity])
-  }, s)
+  if (got_midi_outputs) {
+    const s = !!sustain ? sustain : 75
+    // output_modular.sendMessage([NOTE_ON[ch], notes[note], velocity]) // old version
+    output_modular.sendMessage([NOTE_ON[ch], note, velocity])
+    setTimeout(() => {
+      output_modular.sendMessage([NOTE_OFF[ch], notes[note], velocity]) // old version
+      output_modular.sendMessage([NOTE_OFF[ch], note, velocity])
+    }, s)
+  }
 }
 /**
  * 
@@ -238,7 +258,8 @@ app.post('/log-point', (req, res) => {
           // play_note('f3', 1)
           play_note('e3', 'ch_5', 127)
         } else if (!!event['visualElementGestured']) {
-          console.log('visual element gestured')
+          // if there are visual elemnts getured add them 
+          console.log('///~~~ visual element gestured ~~~///')
 
           // send_cc(0, max_vel--)
           num_gestured_events++
@@ -253,13 +274,20 @@ app.post('/log-point', (req, res) => {
         }
 
       }
-      const triggers = Math.floor((num_gestured_events / data['events'].length) * max_arp_notes)
-      division = 4 - (Math.floor((num_gestured_events / data['events'].length) * 3))
-      console.log(division)
-      console.log(triggers, num_gestured_events, data['events'].length)
+      // create an euclidean pattern for the gestured events
+      let triggers = data['events'].length
+      if (triggers > 64) {
+        triggers = 64
+      }
+      // const triggers = Math.floor((num_gestured_events / data['events'].length) * max_arp_notes)
+      // division = 4 - (Math.floor((num_gestured_events / data['events'].length) * 3))
+      // console.log(division)
+      console.log(triggers, max_arp_notes)
       if (triggers >= 1) {
         perc_pattern = euclidean_pattern(triggers, max_arp_notes)
       }
+      console.log('///~~~ current euclidean pattern ~~~///')
+      console.log(perc_pattern)
       //play a series of kick drums
       // burst_notes('f3', events_to_percs, 250)
 
@@ -393,6 +421,47 @@ app.post('/log-point', (req, res) => {
   // play_note(note, vel)
   res.send({ response: 'success' })
 })
+
+
+const get_midi_outputs = () => {
+  // Count the available output_modular ports.
+  const ports = output_modular.getPortCount();
+  const midi_ports = []
+  // Get the name of a specified output_modular port.
+  for (let i = 0; i < ports; i++) {
+    const obj = {
+      name: output_modular.getPortName(i),
+      number: i
+    }
+    midi_ports.push(obj)
+  }
+  return midi_ports
+}
+
+// get midi outputs
+app.get('/midi', (req, res) => {
+  console.log('midi requested');
+  const midi_outputs = get_midi_outputs()
+  res.send({ midi_outputs })
+}
+)
+
+// set midi output
+app.post('/set-midi', (req, res) => {
+  const midi_output = req.body
+  set_midi_output(midi_output)
+  console.log('midi set')
+  res.send({ response: 'success' })
+}
+)
+
+
+
+
+/**
+ * They'll need their own package....
+ * UTILS
+ */
 
 
 /**

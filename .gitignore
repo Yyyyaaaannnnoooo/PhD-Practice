@@ -178,6 +178,7 @@ dist
 sounding-out-hovering/observations/desktop-documentaries/*
 sounding-out-hovering/observations/beacons/*
 sounding-out-hovering/algorithmic-imaginaries/*
+supercollider/*
 supercollider/test/00.sc
 supercollider/gabber-hoover.sc
 supercollider/glitches.sc

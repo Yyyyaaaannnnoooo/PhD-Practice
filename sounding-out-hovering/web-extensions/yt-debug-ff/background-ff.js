@@ -64,8 +64,8 @@ function tamper_request_listener(e) {
         // console.log('///~~~~~~~~~~~~///')
       }
       if (e.url.includes('log_event?')) {
-        // console.log('///~~~ log event ~~~///')
-        // console.log(json)
+        console.log('///~~~ log event ~~~///')
+        console.log(json)
         // // let vel = json['events'].length
         // // console.log(vel)
         // // if (vel > 127) {
@@ -115,7 +115,7 @@ function tamper_header_listener(e) {
     // console.log('///~~~~~~~~~~~~///')
   }
   if (e.url.includes('qoe?')) {
-    // console.log("///~~~ qoe ~~~///")
+    console.log("///~~~ qoe ~~~///")
 
     const json = get_params_from_url(e.url)
     // console.log(json['docid'])
@@ -182,7 +182,7 @@ function send_message(id, data) {
       body: JSON.stringify({ id, data })
     })
     .then(response => response.json())
-    .then(result => { console.log('Success:', result); })
+    // .then(result => { console.log('Success:', result); })
     .catch(error => { console.error('Error:', error); });
 }
 
